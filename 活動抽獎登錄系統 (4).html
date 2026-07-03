@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>活動抽獎登錄系統</title>
+    <style>
+        :root {
+            --primary-color: #FF6F00;       /* 活力暖橘 */
+            --primary-hover: #E65100;       /* 深橘色 */
+            --bg-color: #FFF3E0;            /* 淺橘微透背景 */
+            --card-bg: #FFFFFF;             /* 純白卡片 */
+            --text-color: #333333;          /* 深灰文字 */
+            --muted-text: #666666;          /* 輔助文字 */
+            --border-color: #FFE0B2;        /* 輕柔橘邊框 */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 12px 40px rgba(255, 111, 0, 0.08);
+            width: 100%;
+            max-width: 460px;
+            text-align: center;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        p.subtitle {
+            color: var(--muted-text);
+            font-size: 14px;
+            margin-bottom: 32px;
+        }
+
+        /* 表單樣式 */
+        .form-group {
+            text-align: left;
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #444444;
+            font-size: 14px;
+        }
+
+        input[type="text"], input[type="tel"], input[type="email"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 16px;
+            color: var(--text-color);
+            background-color: #FCFCFC;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--primary-color);
+            background-color: #FFFFFF;
+            box-shadow: 0 0 0 4px rgba(255, 111, 0, 0.1);
+        }
+
+        button {
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            margin-top: 10px;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        button:active {
+            transform: scale(0.99);
+        }
+
+        /* 成功/序號畫面樣式 */
+        .success-view {
+            display: none;
+        }
+
+        .success-view.active {
+            display: block;
+            animation: slideUp 0.5s cubic-bezier(0.1, 0.8, 0.25, 1) forwards;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .serial-box {
+            background-color: #FFF8E1;
+            border: 2px dashed var(--primary-color);
+            padding: 24px 20px;
+            border-radius: 12px;
+            margin: 28px 0;
+            position: relative;
+        }
+
+        .serial-label {
+            font-size: 13px;
+            color: var(--muted-text);
+            font-weight: 600;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .serial-number {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--primary-color);
+            letter-spacing: 2px;
+        }
+
+        .screenshot-alert {
+            color: #E53935;
+            font-weight: 700;
+            margin-bottom: 24px;
+            font-size: 15px;
+            background-color: #FFEBEE;
+            padding: 10px;
+            border-radius: 8px;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .reminder-box {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #555555;
+            background-color: #FAFAFA;
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 28px;
+            text-align: left;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .social-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--muted-text);
+            margin-bottom: 12px;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            transition: opacity 0.2s;
+        }
+
+        .social-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* 社群顏色設定 */
+        .fb-btn { background-color: #1877F2; }
+        .ig-btn { background-color: #E1306C; }
+
+        /* 隱藏的 iframe 用於背景接收表單送出 */
+        #hidden_iframe {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="form-view">
+            <h1>活動抽獎登錄</h1>
+            <p class="subtitle">請填寫基本資料，送出即可獲得專屬抽獎序號</p>
+            
+            <form id="lottery-form" action="https://docs.google.com/forms/d/e/1FAIpQLSePNd9hxAmpkiUv3_119KQuOeBjTpeyNCPlcd09DM6lRonvYQ/formResponse" method="POST" target="hidden_iframe" onsubmit="handleSubmit()">
+                
+                <div class="form-group">
+                    <label for="name">姓名</label>
+                    <input type="text" id="name" name="entry.713527976" placeholder="請輸入您的真實姓名" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">電話</label>
+                    <input type="tel" id="phone" name="entry.1788274389" placeholder="請輸入手機號碼 (例如: 0912345678)" required pattern="09[0-9]{8}">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">電子信箱</label>
+                    <input type="email" id="email" name="entry.998107164" placeholder="請輸入您的電子信箱" required>
+                </div>
+
+                <input type="hidden" id="serial-hidden" name="entry.11005065">
+
+                <button type="submit">送出資料並領取序號</button>
+            </form>
+        </div>
+
+        <div id="success-view" class="success-view">
+            <h1>🎉 登錄成功！</h1>
+            
+            <div class="serial-box">
+                <div class="serial-label">您的專屬抽獎流水序號</div>
+                <div id="serial-display" class="serial-number">--------</div>
+            </div>
+
+            <p class="screenshot-alert">📸 請務必將此畫面「截圖儲存」作為領獎憑證！</p>
+
+            <div class="reminder-box">
+                🎁 <strong>後續抽獎提醒：</strong><br>
+                請記得關注我們的官方臉書與 IG 專頁，我們將在<strong>隔週周五</strong>準時抽出幸運大獎喔！千萬別錯過中獎通知！
+            </div>
+
+            <div class="social-title">立即關注我們 👇</div>
+            <div class="social-links">
+                <a href="https://www.facebook.com/ONElabTW?locale=zh_TW" target="_blank" class="social-btn fb-btn">Facebook</a>
+                <a href="https://www.instagram.com/onelab.tw/" target="_blank" class="social-btn ig-btn">Instagram</a>
+            </div>
+        </div>
+    </div>
+
+    <iframe name="hidden_iframe" id="hidden_iframe"></iframe>
+
+    <script>
+        // 自動生成流水序號的邏輯
+        function generateSerialNumber() {
+            const now = new Date();
+            // 規則：OR (Orange) + 年月日 (6碼) + 4碼隨機數字。範例：OR2607024829
+            const year = now.getFullYear().toString().slice(-2);
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const date = String(now.getDate()).padStart(2, '0');
+            const randomNum = Math.floor(1000 + Math.random() * 9000); 
+            
+            return `OR${year}${month}${date}${randomNum}`;
+        }
+
+        // 表單按下送出時觸發的 JavaScript 邏輯
+        function handleSubmit() {
+            // 1. 即時生成一組流水序號
+            const serialNumber = generateSerialNumber();
+            
+            // 2. 把序號塞進隱藏的 input 欄位，這樣 Google 表單才會收到這組序號
+            document.getElementById('serial-hidden').value = serialNumber;
+            
+            // 3. 把序號呈現在網頁畫面上給使用者看
+            document.getElementById('serial-display').innerText = serialNumber;
+            
+            // 4. 將原本的填寫表單隱藏，並流暢切換成「成功與截圖提醒畫面」
+            document.getElementById('form-view').style.display = 'none';
+            document.getElementById('success-view').classList.add('active');
+        }
+    </script>
+</body>
+</html>
